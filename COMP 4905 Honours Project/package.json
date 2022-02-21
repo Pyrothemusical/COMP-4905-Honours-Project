@@ -1,0 +1,9 @@
+{
+  "name": "comp-4905-honours-project",
+  "version": "0.0.0",
+  "description": "COMP 4905 Honours Project",
+  "main": "server.js",
+  "author": {
+    "name": ""
+  }
+}
