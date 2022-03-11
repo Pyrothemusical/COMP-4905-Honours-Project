@@ -37,6 +37,12 @@
     <Content Include="filesdrop.html">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="scripts\PlaybackTimestampsPage.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="setupTimestamps.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="scripts\PlaybackFilesDrop.js">
       <SubType>Code</SubType>
     </Content>
