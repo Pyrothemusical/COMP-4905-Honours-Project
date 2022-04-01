@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Playback Sensation</title>
+    <!-- Ensure appropriate scales -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <!-- Font Type -->
+    <link href='https://fonts.googleapis.com/css?family=Quicksand:300,400,700' rel='stylesheet' type='text/css'>
+
+    <!-- Icons -->
+    <script src="https://kit.fontawesome.com/a83ac6545b.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/musicApp.css"></link>
+</head>
+
+<body>
+    <div id="mainArea">
+        <div class="pageHeader">
+            <div class="title">
+                REVIEW PLAYBACK
+            </div>
+
+            <div style="text-align: center">
+                <audio id="mp3Recording" controls class="audioWrapper"></audio>
+                <div id="btnNavs" style="margin: 10px 0px 10px 0px">
+                    <button id="btnPrev" class="btnNavigate">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <button id="btnNext" class="btnNavigate">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <span class="pageNumDesc" style="margin: 0px 100px 0px 100px; font-weight: 600">PAGE: <span id="pageNum" style="font-weight: 600"></span>  /  <span id="pageCount" style="font-weight: 600"></span></span>
+                </div>
+                <div id="canvas_container">
+                    <canvas id="pdfViewer" style="margin: 10px 0px 10px 0px"></canvas>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+    <script type="text/javascript" src="scripts/PlaybackReview.js"></script>
+
+</body>
+</html>

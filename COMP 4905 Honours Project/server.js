@@ -76,13 +76,19 @@ router.get('/getFileNames', function (req, res) {
 
 router.post('/sendTimeInfo', function (req, res) {
     var timePageData = JSON.stringify(req.body);
-        fs.writeFileSync('timePageData.json', timePageData, (error) => {
+    console.log(timePageData);
+    fs.writeFileSync('timePageData.json', timePageData, (error) => {
         if (error) {
             throw err;
         }
         console.log("The data successfully saved into a JSON file.");
     })
 });
+
+router.get('/reviewPlayback', function (req, res) {
+    res.sendFile(path.join(publicPath + '/reviewPlayback.html'));
+});
+
 
 app.use('/', router);
 app.use(express.static(publicPath));

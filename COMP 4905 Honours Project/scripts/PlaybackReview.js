@@ -13,13 +13,12 @@ var pdfDoc = null,
     scale = 1.5,
     pdfPages = [],
     canvas = document.getElementById('pdfViewer'),
-    ctx = canvas.getContext('2d'),
     mp3Audio = document.getElementById('mp3Recording'),
-    rect = {},
-    currTime = 0,
-    timeStampResults = [],
-    finalTimeStampResults = [],
-    drag = false;
+    ctx = canvas.getContext('2d'),
+    playbackData = [],
+    currentPageInfo = [],
+    mouseOverBar = false;
+    rectDrawn = false;
 
 function disableButton(id) {
     $(id).css('cursor', 'not-allowed');
@@ -51,110 +50,107 @@ function checkButtonNextEnable() {
     }
 }
 
-function checkButtonSubmitEnable() {
-    if (timeStampResults.length === 0) {
-        disableButton('#btnSubmit');
-    }
-    else {
-        enableButton('#btnSubmit');
-    }
-}
+function checkMouseRect(currentX, currentY) {
 
-function resetRect() {
-    rect.startX = 0;
-    rect.startY = 0;
-    rect.h = 0;
-    rect.w = 0;
-}
+    if (pageRendering === false) {
+        for (var i = 0; i < currentPageInfo.length; i++) {
 
-function verifyEmptyRect() {
-    if ((rect.h === 0 && rect.w === 0) || (typeof rect.h === 'undefined' && typeof rect.w === 'undefined'))  {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
+            startX = currentPageInfo[i].rectStartX;
+            startY = currentPageInfo[i].rectStartY;
+            endX = currentPageInfo[i].rectStartX + currentPageInfo[i].rectW;
+            endY = currentPageInfo[i].rectStartY + currentPageInfo[i].rectH;
 
-function findDupTime() {
-    for (var i = 0; i < timeStampResults.length; i++) {
-        if (timeStampResults[i].time === currTime) {
-            return i;
+            if (startX <= currentX && startY <= currentY && endX >= currentX && endY >= currentY) {
+                return currentPageInfo[i];
+            }
         }
     }
-    return -1;
+
+    return false;
 }
 
-function retrieveTimePage() {
-    //console.log('Min:' + Math.floor(mp3Audio.currentTime / 60));
-    //console.log('Sec: ' + Math.floor(mp3Audio.currentTime % 60));
-    //console.log('Current Page: ' + currPage);
-    //console.log(rect);
-    var timeInfo = {
-        time: currTime,
-        pageNum: currPage,
-        rectStartX: rect.startX,
-        rectStartY: rect.startY,
-        rectH: rect.h,
-        rectW: rect.w
-    };
+function getPageInfo(pageNum) {
+    currentPageInfo = [];
 
-    if (timeStampResults.length !== 0) {
-        var dupInd = findDupTime();
-        if (dupInd !== -1) {
-            timeStampResults[dupInd] = timeInfo;
-        }
-        else {
-            timeStampResults.push(timeInfo);
-        }
-    }
-    else {
-        timeStampResults.push(timeInfo);
-    }
-    console.log(timeStampResults);
-}
-
-function mouseDown(e) {
-    rect.startX = e.pageX - this.offsetLeft;
-    rect.startY = e.pageY - this.offsetTop;
-    currTime = mp3Audio.currentTime;
-    drag = true;
-}
-
-function mouseUp() {
-    drag = false;
-    if (verifyEmptyRect() === false) {
-        retrieveTimePage();
-    }
-    checkButtonSubmitEnable();
-    resetRect();
+    currentPageInfo = playbackData.filter(function (element) {
+        return element.pageNum === pageNum;
+    });
+    currentPageInfo.sort((a, b) => a.startTime - b.startTime);
+    console.log(currentPageInfo);
 }
 
 function mouseMove(e) {
-    if (drag) {
+    if (rectDrawn === true && pageRendering === false) {
         ctx.putImageData(pdfPages[currPage], 0, 0);
-        rect.w = (e.pageX - this.offsetLeft) - rect.startX;
-        rect.h = (e.pageY - this.offsetTop) - rect.startY;
-        draw();
+    }
+    currX = e.pageX - this.offsetLeft;
+    currY = e.pageY - this.offsetTop;
+
+    ctx.fillStyle = 'rgba(255, 0, 0, .2)';
+    var drawRect = checkMouseRect(currX, currY);
+
+    if (drawRect === false) {
+        mouseOverBar = false;
+    }
+    else {
+        ctx.fillRect(drawRect.rectStartX, drawRect.rectStartY, drawRect.rectW, drawRect.rectH);
+        mouseOverBar = true;
+        rectDrawn = true;
     }
 }
 
-function draw() {
-    ctx.setLineDash([6]);
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = '#ff0000';
-    ctx.strokeRect(rect.startX, rect.startY, rect.w, rect.h);
+function click(e) {
+    currX = e.pageX - this.offsetLeft;
+    currY = e.pageY - this.offsetTop;
+
+    if (pageRendering === false) {
+        var timeFind = checkMouseRect(currX, currY);
+
+        if (timeFind !== false) {
+            mp3Audio.currentTime = timeFind.startTime;
+            mp3Audio.play();
+        }
+    }
+
+}
+
+function checkTimestamp(element) {
+    if (mp3Audio.currentTime >= element.startTime && mp3Audio.currentTime <= element.endTime) {
+        if (element.pageNum !== currPage) {
+            currPage = element.pageNum;
+            queueRenderPage(currPage);
+            checkButtonPrevEnable();
+            checkButtonNextEnable();
+        }
+
+        if (pageRendering === false) {
+            ctx.putImageData(pdfPages[currPage], 0, 0);
+            ctx.fillStyle = 'rgba(255, 0, 0, .2)';
+            ctx.fillRect(element.rectStartX, element.rectStartY, element.rectW, element.rectH);
+            rectDrawn = false;
+        }
+    }
+
+}
+
+function updateTime(e) {
+    if (mouseOverBar === false) {
+        for (var i = 0; i < playbackData.length; i++) {
+            checkTimestamp(playbackData[i]);
+        }
+    }
 }
 
 function init() {
-    canvas.addEventListener('mousedown', mouseDown, false);
-    canvas.addEventListener('mouseup', mouseUp, false);
     canvas.addEventListener('mousemove', mouseMove, false);
+    canvas.addEventListener('click', click, false);
+    mp3Audio.addEventListener('timeupdate', updateTime, false);
 }
-
 
 function renderPage(num) {
     pageRendering = true;
+    getPageInfo(num);
+
     // Using promise to fetch the page
     pdfDoc.getPage(num).then(function (page) {
         var viewport = page.getViewport({ scale: scale });
@@ -173,8 +169,6 @@ function renderPage(num) {
             pageRendering = false;
 
             pdfPages[num] = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            //ctx.fillStyle = 'rgba(255,0,0,.2)';
-            //ctx.fillRect(200, 200, 100, 100);
 
             if (pageNumPending !== null) {
                 // New page rendering is pending
@@ -208,6 +202,8 @@ function onPrevPage() {
         return;
     }
     currPage--;
+    rectDrawn = false;
+    mouseOverBar = false;
     queueRenderPage(currPage);
     checkButtonPrevEnable();
     checkButtonNextEnable();
@@ -221,49 +217,15 @@ function onNextPage() {
         return;
     }
     currPage++;
+    rectDrawn = false;
+    mouseOverBar = false;
     queueRenderPage(currPage);
     checkButtonPrevEnable();
     checkButtonNextEnable();
 }
 
-function submitTimeData() {
-    timeStampResults.sort((a, b) => a.time - b.time);
-
-    for (var i = 0; i < timeStampResults.length; i++) {
-        var timeEntry = {
-            startTime: timeStampResults[i].time,
-            pageNum: timeStampResults[i].pageNum,
-            rectStartX: timeStampResults[i].rectStartX,
-            rectStartY: timeStampResults[i].rectStartY,
-            rectH: timeStampResults[i].rectH,
-            rectW: timeStampResults[i].rectW
-        };
-
-        if (i === timeStampResults.length - 1) {
-            timeEntry.endTime = mp3Audio.duration;
-        }
-        else {
-            timeEntry.endTime = timeStampResults[i + 1].time;
-        }
-
-        finalTimeStampResults.push(timeEntry);
-    }
-
-    finalTimeStampResults.sort((a, b) => a.startTime - b.startTime);
-
-    var timeJSONData = JSON.stringify(finalTimeStampResults);
-    console.log(timeJSONData);
-    var xmlHTTP = new XMLHttpRequest();
-    xmlHTTP.open("POST", "/sendTimeInfo");
-    xmlHTTP.setRequestHeader("Content-Type", "application/json");
-    xmlHTTP.send(timeJSONData);
-
-    window.location.replace('http://localhost:1337/reviewPlayback');
-}
-
 document.getElementById('btnPrev').addEventListener('click', onPrevPage);
 document.getElementById('btnNext').addEventListener('click', onNextPage);
-document.getElementById('btnSubmit').addEventListener('click', submitTimeData);
 init();
 
 $(document).ready(function () {
@@ -289,9 +251,16 @@ $(document).ready(function () {
             // Initial/first page rendering
             renderPage(currPage);
         });
+
+
+    });
+
+    $.getJSON('http://localhost:1337/timePageData.json', function (data) {
+        playbackData = data;
+        console.log('Time Page Data');
+        console.log(playbackData);
     });
 
     checkButtonPrevEnable();
     checkButtonNextEnable();
-    checkButtonSubmitEnable();
 });
