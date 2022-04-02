@@ -51,6 +51,24 @@ function checkButtonNextEnable() {
     }
 }
 
+function checkButtonUndoEnable() {
+    if (timeStampResults.length > 0) {
+        enableButton('#btnUndo');
+    }
+    else {
+        disableButton('#btnUndo');
+    }
+}
+
+function checkButtonClearEnable() {
+    if (timeStampResults.length > 0) {
+        enableButton('#btnClear');
+    }
+    else {
+        disableButton('#btnClear');
+    }
+}
+
 function checkButtonSubmitEnable() {
     if (timeStampResults.length === 0) {
         disableButton('#btnSubmit');
@@ -86,10 +104,6 @@ function findDupTime() {
 }
 
 function retrieveTimePage() {
-    //console.log('Min:' + Math.floor(mp3Audio.currentTime / 60));
-    //console.log('Sec: ' + Math.floor(mp3Audio.currentTime % 60));
-    //console.log('Current Page: ' + currPage);
-    //console.log(rect);
     var timeInfo = {
         time: currTime,
         pageNum: currPage,
@@ -126,6 +140,8 @@ function mouseUp() {
     if (verifyEmptyRect() === false) {
         retrieveTimePage();
     }
+    checkButtonUndoEnable();
+    checkButtonClearEnable();
     checkButtonSubmitEnable();
     resetRect();
 }
@@ -147,6 +163,12 @@ function draw() {
 }
 
 function init() {
+    document.getElementById('btnPrev').addEventListener('click', onPrevPage);
+    document.getElementById('btnNext').addEventListener('click', onNextPage);
+    document.getElementById('btnUndo').addEventListener('click', undoAction);
+    document.getElementById('btnClear').addEventListener('click', clearAll);
+    document.getElementById('btnSubmit').addEventListener('click', submitTimeData);
+
     canvas.addEventListener('mousedown', mouseDown, false);
     canvas.addEventListener('mouseup', mouseUp, false);
     canvas.addEventListener('mousemove', mouseMove, false);
@@ -226,6 +248,26 @@ function onNextPage() {
     checkButtonNextEnable();
 }
 
+function undoAction() {
+    timeStampResults.pop();
+    ctx.putImageData(pdfPages[currPage], 0, 0);
+    console.log(timeStampResults);
+
+    checkButtonUndoEnable();
+    checkButtonClearEnable();
+    checkButtonSubmitEnable();
+}
+
+function clearAll() {
+    timeStampResults = [];
+    ctx.putImageData(pdfPages[currPage], 0, 0);
+    console.log(timeStampResults);
+
+    checkButtonUndoEnable();
+    checkButtonClearEnable();
+    checkButtonSubmitEnable();
+}
+
 function submitTimeData() {
     timeStampResults.sort((a, b) => a.time - b.time);
 
@@ -261,9 +303,6 @@ function submitTimeData() {
     window.location.replace('http://localhost:1337/reviewPlayback');
 }
 
-document.getElementById('btnPrev').addEventListener('click', onPrevPage);
-document.getElementById('btnNext').addEventListener('click', onNextPage);
-document.getElementById('btnSubmit').addEventListener('click', submitTimeData);
 init();
 
 $(document).ready(function () {
@@ -293,5 +332,7 @@ $(document).ready(function () {
 
     checkButtonPrevEnable();
     checkButtonNextEnable();
+    checkButtonUndoEnable();
+    checkButtonClearEnable();
     checkButtonSubmitEnable();
 });

@@ -142,6 +142,10 @@ function updateTime(e) {
 }
 
 function init() {
+    document.getElementById('btnPrev').addEventListener('click', onPrevPage);
+    document.getElementById('btnNext').addEventListener('click', onNextPage);
+    document.getElementById('btnHome').addEventListener('click', goHome);
+
     canvas.addEventListener('mousemove', mouseMove, false);
     canvas.addEventListener('click', click, false);
     mp3Audio.addEventListener('timeupdate', updateTime, false);
@@ -224,8 +228,10 @@ function onNextPage() {
     checkButtonNextEnable();
 }
 
-document.getElementById('btnPrev').addEventListener('click', onPrevPage);
-document.getElementById('btnNext').addEventListener('click', onNextPage);
+function goHome() {
+    window.location.replace('http://localhost:1337/filesDrop');
+}
+
 init();
 
 $(document).ready(function () {

@@ -25,13 +25,16 @@
             <div style="text-align: center">
                 <audio id="mp3Recording" controls class="audioWrapper"></audio>
                 <div id="btnNavs" style="margin: 10px 0px 10px 0px">
-                    <button id="btnPrev" class="btnNavigate">
+                    <button id="btnPrev" class="btnIcon">
                         <i class="fa-solid fa-arrow-left"></i>
                     </button>
-                    <button id="btnNext" class="btnNavigate">
+                    <button id="btnNext" class="btnIcon">
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
-                    <span class="pageNumDesc" style="margin: 0px 100px 0px 100px; font-weight: 600">PAGE: <span id="pageNum" style="font-weight: 600"></span>  /  <span id="pageCount" style="font-weight: 600"></span></span>
+                    <span class="pageNumDesc">PAGE: <span id="pageNum"></span>  /  <span id="pageCount"></span></span>
+                    <button id="btnHome" class="btnIcon" title="RESUBMIT FILES">
+                        <i class="fa-solid fa-house"></i>
+                    </button>
                 </div>
                 <div id="canvas_container">
                     <canvas id="pdfViewer" style="margin: 10px 0px 10px 0px"></canvas>
