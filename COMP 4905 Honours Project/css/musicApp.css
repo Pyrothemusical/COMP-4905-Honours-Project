@@ -1,3 +1,7 @@
+/***************************************
+    PLAYBACK SENSATION STYLESHEETS
+****************************************/
+
 html, body {
     background-color: #6BAE44;
     height: 100%;
@@ -7,47 +11,29 @@ html, body {
 }
 
 
-/* ******************************
-              BUTTONS!
-     (Inspired by Bootstrap 3.0)
-   ****************************** */
+/**********************************
+              BUTTONS
+**********************************/
 
-.btn {
+.btnEnter {
     display: inline-block;
     height: 100%;
     width: 50%;
-    margin-bottom: 0;
     color: #ECFFE0;
     font-family: 'Quicksand', sans-serif;
     font-weight: 700;
     font-size: 2em;
-    line-height: 1.2;
     text-align: center;
     background-color: #83C74F;
-    white-space: nowrap;
     vertical-align: middle;
     cursor: pointer;
-    border: 1px solid transparent;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-.btn:hover {
-    color: #AE37B2;
-    text-decoration: none;
-}
-
-.btn:active{
-    outline: 0;
-    color: #ECFFE0;
+    border: 2px solid transparent;
 }
 
 .btnIcon {
     display: inline-block;
+    height: 100%;
     width: 5%;
-    margin-bottom: 0;
     color: #ECFFE0;
     font-family: 'Quicksand', sans-serif;
     font-weight: 700;
@@ -55,31 +41,15 @@ html, body {
     line-height: 1.2;
     text-align: center;
     background-color: #83C74F;
-    white-space: nowrap;
     vertical-align: middle;
     cursor: pointer;
-    border: 1px solid transparent;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-.btnIcon:hover{
-    color: #AE37B2;
-    text-decoration: none;
-}
-
-.btnIcon:active,
-.btnIcon.active {
-    outline: 0;
-    color: #ECFFE0;
+    border: 2px solid transparent;
 }
 
 .btnSubmit {
     display: inline-block;
+    height: 100%;
     width: 20%;
-    margin-bottom: 0;
     color: #ECFFE0;
     font-family: 'Quicksand', sans-serif;
     font-weight: 700;
@@ -87,76 +57,27 @@ html, body {
     line-height: 1.2;
     text-align: center;
     background-color: #83C74F;
-    white-space: nowrap;
     vertical-align: middle;
     cursor: pointer;
-    border: 1px solid transparent;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    border: 2px solid transparent;
 }
 
+.btnEnter:hover,
+.btnIcon:hover,
 .btnSubmit:hover {
     color: #AE37B2;
     text-decoration: none;
 }
 
-.btnSubmit:active,
-.btnSubmit.active {
-    outline: 0;
-    color: #ECFFE0;
-}
 
 .buttons {
     width: 100%;
     text-align: center;
 }
 
-/*From W3Schools*/
-.tooltip {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-}
-
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 120px;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -60px;
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-.tooltip .tooltiptext::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: #555 transparent transparent transparent;
-}
-
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
-}
-
-/* ******************************
-          TITLE SCREEN
-     (intro-screen-template)
-   ****************************** */
+/************************************************
+          TITLES, HEADERS, DESCRIPTIONS
+ ************************************************/
 
 .titleWrapper {
     font-family: 'Quicksand', sans-serif;
@@ -218,6 +139,11 @@ html, body {
     display: inline-block;
     padding: 6px 12px;
     cursor: pointer;
+}
+
+.custom-file-upload:hover {
+    color: #AE37B2;
+    text-decoration: none;
 }
 
 .fileDescription {

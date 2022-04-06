@@ -1,3 +1,14 @@
+/* * * * * * * * * * *
+ *
+ * Student Name: Alex Gan
+ * Student Number: 101071670
+ * JS File Description: JS script for Review Timestamps Page
+ * - Allows user to review music playthrough and document highlights based on submitted information
+ * - Coordinates PDF viewer and MP3 player to match document highlgihts and audio player current timestamp together
+ * - Handles user's mouse and click movements by highighting specified document areas accordingly
+ * 
+ * * * * * * * * * * */
+
 var mp3FileName = "";
 var pdfFileName = "";
 var mp3SrcURL = 'http://localhost:1337/uploads/mp3/';
@@ -17,8 +28,16 @@ var pdfDoc = null,
     ctx = canvas.getContext('2d'),
     playbackData = [],
     currentPageInfo = [],
-    mouseOverBar = false;
-    rectDrawn = false;
+    mouseOverBar = false,
+    rectDrawn = false,
+    manualPageChange = false;
+
+/* * * * * *
+ *
+ * HTML Button Helper Functions
+ * - Verifies if specified button state should be enabled or disabled
+ *
+ * * * * * */
 
 function disableButton(id) {
     $(id).css('cursor', 'not-allowed');
@@ -50,24 +69,22 @@ function checkButtonNextEnable() {
     }
 }
 
-function checkMouseRect(currentX, currentY) {
+/* * * * * *
+ *
+ * HTML Home Button Event Handler Function
+ *
+ * * * * * */
 
-    if (pageRendering === false) {
-        for (var i = 0; i < currentPageInfo.length; i++) {
-
-            startX = currentPageInfo[i].rectStartX;
-            startY = currentPageInfo[i].rectStartY;
-            endX = currentPageInfo[i].rectStartX + currentPageInfo[i].rectW;
-            endY = currentPageInfo[i].rectStartY + currentPageInfo[i].rectH;
-
-            if (startX <= currentX && startY <= currentY && endX >= currentX && endY >= currentY) {
-                return currentPageInfo[i];
-            }
-        }
-    }
-
-    return false;
+function goHome() {
+    window.location.replace('http://localhost:1337/filesDrop');
 }
+
+/* * * * * *
+ *
+ * Get Current Page Info Function
+ * - Retrieves all timestamp and page information with page number matching current page number in PDF viewer
+ *
+ * * * * * */
 
 function getPageInfo(pageNum) {
     currentPageInfo = [];
@@ -78,6 +95,15 @@ function getPageInfo(pageNum) {
     currentPageInfo.sort((a, b) => a.startTime - b.startTime);
     console.log(currentPageInfo);
 }
+
+/* * * * * *
+ *
+ * Mouse Event Handler Functions
+ * - Highlights rectangle area based on current mouse's position and page information submitted by user
+ * - Directs MP3 player to jump to available associated timestamp based on where user clicked on the document page
+ * - Checks if mouse's current x and y click location is within any highlight rectangle area information present on current document page
+ *
+ * * * * * */
 
 function mouseMove(e) {
     if (rectDrawn === true && pageRendering === false) {
@@ -114,6 +140,52 @@ function click(e) {
 
 }
 
+function checkMouseRect(currentX, currentY) {
+
+    if (pageRendering === false) {
+        for (var i = 0; i < currentPageInfo.length; i++) {
+
+            startX = currentPageInfo[i].rectStartX;
+            startY = currentPageInfo[i].rectStartY;
+            endX = currentPageInfo[i].rectStartX + currentPageInfo[i].rectW;
+            endY = currentPageInfo[i].rectStartY + currentPageInfo[i].rectH;
+
+            if (startX <= currentX && startY <= currentY && endX >= currentX && endY >= currentY) {
+                return currentPageInfo[i];
+            }
+        }
+    }
+
+    return false;
+}
+
+
+/* * * * * *
+ *
+ * UpdateTime Event Handler Function for MP3 Player
+ * - Checks if current time on MP3 player relates to any highlighted area 
+ * on current document page based on user-submitted information
+ *
+ * * * * * */
+
+function updateTime(e) {
+    if (mouseOverBar === false && manualPageChange == false) {
+        for (var i = 0; i < playbackData.length; i++) {
+            checkTimestamp(playbackData[i]);
+        }
+    }
+    manualPageChange = false;
+}
+
+/* * * * * *
+ *
+ * Check Timestamp Function
+ * - Highlights document area if input timestamp information is within range of MP3 player current timestamp
+ * - If current document page does not match with input timestamp information, application renders required page
+ * - Afterwards, highlights document area associated with Mp3 player current timestamp
+ *
+ * * * * * */
+
 function checkTimestamp(element) {
     if (mp3Audio.currentTime >= element.startTime && mp3Audio.currentTime <= element.endTime) {
         if (element.pageNum !== currPage) {
@@ -133,13 +205,11 @@ function checkTimestamp(element) {
 
 }
 
-function updateTime(e) {
-    if (mouseOverBar === false) {
-        for (var i = 0; i < playbackData.length; i++) {
-            checkTimestamp(playbackData[i]);
-        }
-    }
-}
+/* * * * * *
+ *
+ * Init function initializes all button and mouse event handler listeners
+ *
+ * * * * * */
 
 function init() {
     document.getElementById('btnPrev').addEventListener('click', onPrevPage);
@@ -149,7 +219,17 @@ function init() {
     canvas.addEventListener('mousemove', mouseMove, false);
     canvas.addEventListener('click', click, false);
     mp3Audio.addEventListener('timeupdate', updateTime, false);
+    mp3Audio.addEventListener('play', updateTime, false);
 }
+
+/* * * * * *
+ *
+ * PDF.js Main Helper Functions
+ * - Renders page specified by page number
+ * - Handles previous and next page event handlers
+ * - JS Code from: https://mozilla.github.io/pdf.js/examples/
+ *
+ * * * * * */
 
 function renderPage(num) {
     pageRendering = true;
@@ -202,6 +282,9 @@ function queueRenderPage(num) {
  * Displays previous page.
  */
 function onPrevPage() {
+    manualPageChange = true;
+    mp3Audio.pause();
+
     if (currPage <= 1) {
         return;
     }
@@ -217,6 +300,9 @@ function onPrevPage() {
  * Displays next page.
  */
 function onNextPage() {
+    manualPageChange = true;
+    mp3Audio.pause();
+
     if (currPage >= pdfDoc.numPages) {
         return;
     }
@@ -226,10 +312,6 @@ function onNextPage() {
     queueRenderPage(currPage);
     checkButtonPrevEnable();
     checkButtonNextEnable();
-}
-
-function goHome() {
-    window.location.replace('http://localhost:1337/filesDrop');
 }
 
 init();
@@ -246,7 +328,9 @@ $(document).ready(function () {
         var pdfSrc = pdfSrcURL.concat(pdfFileName);
 
         mp3Audio.src = mp3Src;
-
+        /* * *
+        * Asynchronously downloads PDF.
+        * * */
         pdfjsLib.getDocument(pdfSrc).promise.then(function (pdfDoc_) {
             pdfDoc = pdfDoc_;
             document.getElementById('pageCount').textContent = pdfDoc.numPages;

@@ -1,3 +1,14 @@
+/* * * * * * * * * * *
+ *
+ * Student Name: Alex Gan
+ * Student Number: 101071670
+ * JS File Description: JS script for Setup Timestamps Page
+ * - Allows user to collect and submit timestamp and highlighted document area page information
+ * - Allows user to highlight document areas based on mouse's click and drag movements
+ * - Records when user highlights specific document area based on current timestamp of MP3 player
+ *
+ * * * * * * * * * * */
+
 var mp3FileName = "";
 var pdfFileName = "";
 var mp3SrcURL = 'http://localhost:1337/uploads/mp3/';
@@ -20,6 +31,13 @@ var pdfDoc = null,
     timeStampResults = [],
     finalTimeStampResults = [],
     drag = false;
+
+/* * * * * *
+ *
+ * HTML Button Helper Functions
+ * - Verifies if specified button state should be enabled or disabled
+ *
+ * * * * * */
 
 function disableButton(id) {
     $(id).css('cursor', 'not-allowed');
@@ -78,6 +96,40 @@ function checkButtonSubmitEnable() {
     }
 }
 
+/* * * * * *
+ *
+ * HTML Undo and Clear Button Event Handler Functions
+ *
+ * * * * * */
+
+function undoAction() {
+    timeStampResults.pop();
+    ctx.putImageData(pdfPages[currPage], 0, 0);
+    console.log(timeStampResults);
+
+    checkButtonUndoEnable();
+    checkButtonClearEnable();
+    checkButtonSubmitEnable();
+}
+
+function clearAll() {
+    timeStampResults = [];
+    ctx.putImageData(pdfPages[currPage], 0, 0);
+    console.log(timeStampResults);
+
+    checkButtonUndoEnable();
+    checkButtonClearEnable();
+    checkButtonSubmitEnable();
+}
+
+/* * * * * *
+ *
+ * Drawing Rectangle Helper Functions
+ * - Resets rectangle properties
+ * - Checks if user drew an empty rectangle
+ *
+ * * * * * */
+
 function resetRect() {
     rect.startX = 0;
     rect.startY = 0;
@@ -93,6 +145,15 @@ function verifyEmptyRect() {
         return false;
     }
 }
+/* * * * * *
+ *
+ * Storing Time and Document Page Info Helper Functions
+ * - Checks if the current time with the user's highlighted document area already exists as a duplicate
+ * - Stores time and document page information in an array
+ * - If the specified timestamp already has a document page area information associated with it, 
+ * the application replaces the timestamp with the most recent user-submitted information
+ *
+ * * * * * */
 
 function findDupTime() {
     for (var i = 0; i < timeStampResults.length; i++) {
@@ -103,7 +164,7 @@ function findDupTime() {
     return -1;
 }
 
-function retrieveTimePage() {
+function storeTimePage() {
     var timeInfo = {
         time: currTime,
         pageNum: currPage,
@@ -125,8 +186,16 @@ function retrieveTimePage() {
     else {
         timeStampResults.push(timeInfo);
     }
-    console.log(timeStampResults);
 }
+
+/* * * * * *
+ *
+ * Mouse Event Handler Functions
+ * - Draws rectangle border based on mouse's drag movements
+ * - Collects mp3 file time information based on mouse left click
+ * - Collects document shaded area information based on mouse left release
+ *
+ * * * * * */
 
 function mouseDown(e) {
     rect.startX = e.pageX - this.offsetLeft;
@@ -138,7 +207,7 @@ function mouseDown(e) {
 function mouseUp() {
     drag = false;
     if (verifyEmptyRect() === false) {
-        retrieveTimePage();
+        storeTimePage();
     }
     checkButtonUndoEnable();
     checkButtonClearEnable();
@@ -155,12 +224,26 @@ function mouseMove(e) {
     }
 }
 
+/* * * * * *
+ *
+ * Main JS Draw function
+ * - Allows user to draw rectangle border 
+ * over specified document area with mouse movements
+ *
+ * * * * * */
+
 function draw() {
     ctx.setLineDash([6]);
     ctx.lineWidth = 4;
     ctx.strokeStyle = '#ff0000';
     ctx.strokeRect(rect.startX, rect.startY, rect.w, rect.h);
 }
+
+/* * * * * *
+ *
+ * Init function initializes all button and mouse event handler listeners
+ *
+ * * * * * */
 
 function init() {
     document.getElementById('btnPrev').addEventListener('click', onPrevPage);
@@ -174,6 +257,14 @@ function init() {
     canvas.addEventListener('mousemove', mouseMove, false);
 }
 
+/* * * * * *
+ *
+ * PDF.js Main Helper Functions
+ * - Renders page specified by page number
+ * - Handles previous and next page event handlers
+ * - JS Code from: https://mozilla.github.io/pdf.js/examples/
+ *
+ * * * * * */
 
 function renderPage(num) {
     pageRendering = true;
@@ -248,25 +339,15 @@ function onNextPage() {
     checkButtonNextEnable();
 }
 
-function undoAction() {
-    timeStampResults.pop();
-    ctx.putImageData(pdfPages[currPage], 0, 0);
-    console.log(timeStampResults);
-
-    checkButtonUndoEnable();
-    checkButtonClearEnable();
-    checkButtonSubmitEnable();
-}
-
-function clearAll() {
-    timeStampResults = [];
-    ctx.putImageData(pdfPages[currPage], 0, 0);
-    console.log(timeStampResults);
-
-    checkButtonUndoEnable();
-    checkButtonClearEnable();
-    checkButtonSubmitEnable();
-}
+/* * * * * *
+ *
+ * Submit Helper Function
+ * - Creates JSON object from JS objects containing page and timestamp information
+ * - Sorts JS objects based on rectangle highlight event starting time
+ * - Creates XMLHttpRequest object to send JSON object to application server-side
+ * - Directs application to Review Playback page
+ *
+ * * * * * */
 
 function submitTimeData() {
     timeStampResults.sort((a, b) => a.time - b.time);
@@ -294,7 +375,6 @@ function submitTimeData() {
     finalTimeStampResults.sort((a, b) => a.startTime - b.startTime);
 
     var timeJSONData = JSON.stringify(finalTimeStampResults);
-    console.log(timeJSONData);
     var xmlHTTP = new XMLHttpRequest();
     xmlHTTP.open("POST", "/sendTimeInfo");
     xmlHTTP.setRequestHeader("Content-Type", "application/json");
@@ -317,7 +397,9 @@ $(document).ready(function () {
         var pdfSrc = pdfSrcURL.concat(pdfFileName);
 
         mp3Audio.src = mp3Src;
-
+        /* * *
+        * Asynchronously downloads PDF.
+        * * */
         pdfjsLib.getDocument(pdfSrc).promise.then(function (pdfDoc_) {
             pdfDoc = pdfDoc_;
             document.getElementById('pageCount').textContent = pdfDoc.numPages;
@@ -325,7 +407,7 @@ $(document).ready(function () {
                 disableButton('#btnPrev');
                 disableButton('#btnNext');
             }
-            // Initial/first page rendering
+                        // Initial/first page rendering
             renderPage(currPage);
         });
     });

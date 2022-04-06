@@ -1,3 +1,12 @@
+/* * * * * * * * * * *
+ *
+ * Student Name: Alex Gan
+ * Student Number: 101071670
+ * JS File Description: Application server-side code
+ * - Handles managing different routes, saving submitted files as static files, and creating JSON files for sotring information
+ *
+ * * * * * * * * * * */
+
 const express = require('express');
 const path = require('path');
 const multer = require('multer');
