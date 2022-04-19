@@ -29,7 +29,7 @@ var pdfDoc = null,
     playbackData = [],
     currentPageInfo = [],
     mouseOverBar = false,
-    rectDrawn = false,
+    userRectDrawn = false,
     manualPageChange = false;
 
 /* * * * * *
@@ -106,7 +106,7 @@ function getPageInfo(pageNum) {
  * * * * * */
 
 function mouseMove(e) {
-    if (rectDrawn === true && pageRendering === false) {
+    if (userRectDrawn === true && pageRendering === false) {
         ctx.putImageData(pdfPages[currPage], 0, 0);
     }
     currX = e.pageX - this.offsetLeft;
@@ -121,7 +121,7 @@ function mouseMove(e) {
     else {
         ctx.fillRect(drawRect.rectStartX, drawRect.rectStartY, drawRect.rectW, drawRect.rectH);
         mouseOverBar = true;
-        rectDrawn = true;
+        userRectDrawn = true;
     }
 }
 
@@ -199,7 +199,7 @@ function checkTimestamp(element) {
             ctx.putImageData(pdfPages[currPage], 0, 0);
             ctx.fillStyle = 'rgba(255, 0, 0, .2)';
             ctx.fillRect(element.rectStartX, element.rectStartY, element.rectW, element.rectH);
-            rectDrawn = false;
+            userRectDrawn = false;
         }
     }
 
@@ -289,7 +289,7 @@ function onPrevPage() {
         return;
     }
     currPage--;
-    rectDrawn = false;
+    userRectDrawn = false;
     mouseOverBar = false;
     queueRenderPage(currPage);
     checkButtonPrevEnable();
@@ -307,7 +307,7 @@ function onNextPage() {
         return;
     }
     currPage++;
-    rectDrawn = false;
+    userRectDrawn = false;
     mouseOverBar = false;
     queueRenderPage(currPage);
     checkButtonPrevEnable();
