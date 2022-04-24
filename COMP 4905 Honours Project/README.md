@@ -8,5 +8,7 @@ By incorporating JavaScript scripts, HTML pages, and CSS stylesheets, the applic
 Although some challenges impeded the development schedule of the Honours project, particularly the initial misunderstanding of the project requirements due to miscommunication issues, I accomplished all the project objectives I initially envisioned and produced a reliable tool for musically experienced users.
 
 IDE: Visual Studio
+
 Node.JS Version: 16.13.0
+
 Languages: JavaScript, HTML, CSS
