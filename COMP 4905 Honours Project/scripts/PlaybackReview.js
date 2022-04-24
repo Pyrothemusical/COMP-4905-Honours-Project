@@ -93,7 +93,6 @@ function getPageInfo(pageNum) {
         return element.pageNum === pageNum;
     });
     currentPageInfo.sort((a, b) => a.startTime - b.startTime);
-    console.log(currentPageInfo);
 }
 
 /* * * * * *
@@ -319,7 +318,6 @@ init();
 $(document).ready(function () {
 
     $.getJSON('http://localhost:1337/submitFileData.json', function (data) {
-        console.log(data);
 
         mp3FileName = data.mp3FileName;
         pdfFileName = data.pdfFileName;
@@ -347,8 +345,6 @@ $(document).ready(function () {
 
     $.getJSON('http://localhost:1337/timePageData.json', function (data) {
         playbackData = data;
-        console.log('Time Page Data');
-        console.log(playbackData);
     });
 
     checkButtonPrevEnable();

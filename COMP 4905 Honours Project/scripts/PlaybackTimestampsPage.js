@@ -105,7 +105,6 @@ function checkButtonSubmitEnable() {
 function undoAction() {
     timeStampResults.pop();
     ctx.putImageData(pdfPages[currPage], 0, 0);
-    console.log(timeStampResults);
 
     checkButtonUndoEnable();
     checkButtonClearEnable();
@@ -115,7 +114,6 @@ function undoAction() {
 function clearAll() {
     timeStampResults = [];
     ctx.putImageData(pdfPages[currPage], 0, 0);
-    console.log(timeStampResults);
 
     checkButtonUndoEnable();
     checkButtonClearEnable();
@@ -286,8 +284,6 @@ function renderPage(num) {
             pageRendering = false;
 
             pdfPages[num] = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            //ctx.fillStyle = 'rgba(255,0,0,.2)';
-            //ctx.fillRect(200, 200, 100, 100);
 
             if (pageNumPending !== null) {
                 // New page rendering is pending
@@ -388,7 +384,6 @@ init();
 $(document).ready(function () {
 
     $.getJSON('http://localhost:1337/submitFileData.json', function (data) {
-        console.log(data);
 
         mp3FileName = data.mp3FileName;
         pdfFileName = data.pdfFileName;
@@ -407,7 +402,7 @@ $(document).ready(function () {
                 disableButton('#btnPrev');
                 disableButton('#btnNext');
             }
-                        // Initial/first page rendering
+            // Initial/first page rendering
             renderPage(currPage);
         });
     });

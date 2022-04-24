@@ -41,17 +41,12 @@ router.get('/', function (req, res) {
 
 router.get('/filesDrop', function (req, res) {
     res.sendFile(path.join(publicPath + '/filesdrop.html'));
-    console.log('Files Drop Reached');
 });
 
 router.post('/setupFiles', uploadMultiples, function (req, res, next) {
     if (req.files) {
-        console.log(req.files);
-        console.log("Files uploaded");
         var mp3File = req.files.musicMP3File[0].originalname;
-        console.log(mp3File);
         var pdfFile = req.files.musicPDFFile[0].originalname;
-        console.log(pdfFile);
         var fileNames = {
             "pdfFileName": pdfFile,
             "mp3FileName": mp3File
@@ -63,7 +58,6 @@ router.post('/setupFiles', uploadMultiples, function (req, res, next) {
             if (error) {
                 throw err;
             }
-            console.log("The data successfully saved into a JSON file.");
         })
     }
     else {
@@ -79,18 +73,15 @@ router.get('/getFileNames', function (req, res) {
         }
         submitFileData = JSON.parse(fileData.toString());
     });
-    console.log(submitFileData);
 
 });
 
 router.post('/sendTimeInfo', function (req, res) {
     var timePageData = JSON.stringify(req.body);
-    console.log(timePageData);
     fs.writeFileSync('timePageData.json', timePageData, (error) => {
         if (error) {
             throw err;
         }
-        console.log("The data successfully saved into a JSON file.");
     })
 });
 
