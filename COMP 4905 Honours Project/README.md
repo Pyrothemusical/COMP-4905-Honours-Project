@@ -17,3 +17,5 @@ The project requires the following dependencies as listed in the included packag
 - jQuery (ver. 3.6.0)
 - multer (ver. 1.4.4)
 - fs (ver. 0.0.2)
+
+To properly install these NPM modules/dependencies, enter the directory containing the JSON file and run the command: npm install
