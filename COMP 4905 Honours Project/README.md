@@ -7,8 +7,13 @@ records which music bars to highlight at what timestamp in the MP3 recording, an
 By incorporating JavaScript scripts, HTML pages, and CSS stylesheets, the application successfully implemented all the features stated in the Honours project proposal. 
 Although some challenges impeded the development schedule of the Honours project, particularly the initial misunderstanding of the project requirements due to miscommunication issues, I accomplished all the project objectives I initially envisioned and produced a reliable tool for musically experienced users.
 
-IDE: Visual Studio
+IDE + Other Equipment Details:
+- IDE: Visual Studio
+- Node.JS Version: 16.13.0
+- Languages: JavaScript, HTML, CSS
 
-Node.JS Version: 16.13.0
-
-Languages: JavaScript, HTML, CSS
+The project requires the following dependencies as listed in the included package.json file:
+- Express (ver. 4.17.3)
+- jQuery (ver. 3.6.0)
+- multer (ver. 1.4.4)
+- fs (ver. 0.0.2)

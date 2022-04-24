@@ -58,6 +58,8 @@
     <Content Include="server.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="uploads\mp3\.gitkeep" />
+    <Content Include="uploads\pdf\.gitkeep" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="css\" />
