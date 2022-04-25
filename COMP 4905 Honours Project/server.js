@@ -35,14 +35,30 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 const uploadMultiples = upload.fields([{ name: 'musicPDFFile', maxCount: 1 }, { name: 'musicMP3File', maxCount: 1 }]);
 
+/* * * * * *
+ *
+ * HTTP GET Request to retrieve Home Page
+ *
+ * * * * * */
 router.get('/', function (req, res) {
     res.sendFile(path.join(publicPath + '/index.html'));
 });
 
+/* * * * * *
+ *
+ * HTTP GET Request to retrieve FilesDrop Page
+ *
+ * * * * * */
 router.get('/filesDrop', function (req, res) {
     res.sendFile(path.join(publicPath + '/filesdrop.html'));
 });
 
+/* * * * * *
+ *
+ * HTTP POST Request to save PDF and MP3 files as static files,
+ * write filenames in submitFileData.json file, and send SetupTimestamps Page
+ *
+ * * * * * */
 router.post('/setupFiles', uploadMultiples, function (req, res, next) {
     if (req.files) {
         var mp3File = req.files.musicMP3File[0].originalname;
@@ -65,17 +81,12 @@ router.post('/setupFiles', uploadMultiples, function (req, res, next) {
     }
 });
 
-router.get('/getFileNames', function (req, res) {
-    var submitFileData = "";
-    fs.readFile('submitFileData.json', 'utf-8', (error, fileData) => {
-        if (error) {
-            throw error;
-        }
-        submitFileData = JSON.parse(fileData.toString());
-    });
-
-});
-
+/* * * * * *
+ *
+ * HTTP POST Request to save user-submitted timestamp and document
+ * information in the timePageData.json file
+ *
+ * * * * * */
 router.post('/sendTimeInfo', function (req, res) {
     var timePageData = JSON.stringify(req.body);
     fs.writeFileSync('timePageData.json', timePageData, (error) => {
@@ -85,6 +96,11 @@ router.post('/sendTimeInfo', function (req, res) {
     })
 });
 
+/* * * * * *
+ *
+ * HTTP GET Request to retrieve ReviewPlayback Page
+ *
+ * * * * * */
 router.get('/reviewPlayback', function (req, res) {
     res.sendFile(path.join(publicPath + '/reviewPlayback.html'));
 });
